@@ -1,0 +1,10 @@
+.bg-secondary {  
+    background-color: #78787880!important; 
+    border-radius: 20px;
+  }
+  .text-info{
+    color: rgba(99, 163, 208, 0.994)!important;
+  }
+h1{
+    font-family: 'Times New Roman', Times, serif;
+}

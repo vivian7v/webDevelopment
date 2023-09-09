@@ -1,0 +1,296 @@
+ <div class="container">
+    <div
+    *ngIf="showDetail()"
+    class="bg-secondary text-white">
+    <!-- ngif写不写括号是有区别的 -->
+        <div (click)="back()">
+            <button class="btn text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+                </svg>
+                <ins>back</ins> 
+            </button>
+        </div>
+        <div class="text-center">
+            <h4>
+                {{oriDetail.name}}
+                <span class="material-icons rounded-circle bg-white p-1 m-1"
+                style="color:gray; cursor: pointer;"
+                *ngIf="!isInFavo"
+                (click)="addToFavorite()">
+                    favorite_border
+                </span>
+                <span class="material-icons rounded-circle bg-white p-1 m-1"
+                style="color: #ff0544; cursor: pointer;"
+                *ngIf="isInFavo"
+                (click)="cancleFavorite()">
+                    favorite
+                </span>
+            </h4>          
+        </div>
+        <mat-tab-group mat-align-tabs="center" backgroundColor="primary">
+            <mat-tab  label="Events">
+                <div class="row"> 
+                    <div class="col-xs-12 col-md-6 text-center">                 
+                        <div>
+                            <label class="text-success fs-1 fw-bold">Date</label><br>
+                            {{oriDetail.dates.start.localDate}}<br>{{oriDetail.dates.start.localTime}}
+                        </div>
+                        <div>
+                            <label for="artist" class="text-success fs-1 fw-bold">Artist/Team</label><br>
+                            <span *ngFor="let item of oriDetail._embedded.attractions ">
+                                {{item.name}} |
+                            </span>
+                        </div>
+                        <div>
+                            <label for="venue" class="text-success fs-1 fw-bold">Venue</label><br>
+                            <span>{{oriDetail._embedded.venues[0].name}}</span>
+                        </div>
+                        <div>
+                            <label for="genres" class="text-success fs-1 fw-bold">Genre</label><br>
+                            <span *ngIf="oriDetail.classifications[0].genre">{{oriDetail.classifications[0].genre.name}}|</span>
+                            <span *ngIf="oriDetail.classifications[0].subGenre">{{oriDetail.classifications[0].subGenre.name}}|</span>
+                            <span *ngIf="oriDetail.classifications[0].segment">{{oriDetail.classifications[0].segment.name}}|</span>
+                            <span *ngIf="oriDetail.classifications[0].type">{{oriDetail.classifications[0].type.name}}|</span>
+                            <span *ngIf="oriDetail.classifications[0].subType">{{oriDetail.classifications[0].subType.name}}|</span>
+                        </div>
+                        <div *ngIf="oriDetail.priceRanges">
+                            <label for="prive" class="text-success fs-1 fw-bold">Price Ranges</label><br>
+                            <span>{{oriDetail.priceRanges[0].min}}-{{oriDetail.priceRanges[0].max}}</span>
+                        </div>
+                        <div *ngIf="oriDetail.dates.status"> 
+                            <label for="status" class="text-success fs-1 fw-bold">Ticket Status</label><br>
+                            <span *ngIf="oriDetail.dates.status.code=='onsale'" class="bg-success rounded px-2">On Sale</span>
+                            <span *ngIf="oriDetail.dates.status.code=='offsale'" class="bg-danger rounded px-2">Off Sale</span>
+                            <span *ngIf="oriDetail.dates.status.code=='rescheduled'" class="bg-warning rounded px-2">Rescheduled</span>
+                            <span *ngIf="oriDetail.dates.status.code=='postponed'" class="bg-warning rounded px-2">Postponed</span>
+                            <span *ngIf="oriDetail.dates.status.code=='cancelled'" class="bg-dark rounded px-2">Cancelled</span>
+                        </div>
+                        <div>
+                            <label for="buy" class="text-success fs-1 fw-bold">But Ticket At:</label><br>
+                            <a href={{oriDetail.url}}>Ticketmaster</a>
+                        </div>
+                    </div>
+                        <div class="col-xs-12 col-md-6 text-center">
+                            <img src={{oriDetail.seatmap.staticUrl}} alt="seatMap" height="70%" width="70%" class="pt-5 mt-4 mb-2">
+                        </div> 
+                </div>
+                <div  class="text-center">
+                    <label for="icon">Share on: </label>
+                    <a href="https://twitter.com/intent/tweet?text= Check {{detail[0][1]}} on Ticketmaster. {{twitterUrl}}&hashtags=hashtag1,hashtag2" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/4/4f/Twitter-logo.svg" height="20" width="20"></a>
+                    <a href="https://www.facebook.com/sharer/sharer.php?u={{twitterUrl}}&amp;src=sdkpreparse" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/1/1b/Facebook_icon.svg" height="20" width="20"></a>
+                    <!-- <button type="button" data-href="twitterUrl"><a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u={{twitterUrl}}&amp;src=sdkpreparse">Facebook</a></button>  -->
+                </div>
+            </mat-tab>
+            <mat-tab label="Artist/Team" (click)="spotify()">
+                <div *ngIf="artist.length!==0;else noMusic">
+                    <div id="carouselExampleControls" class="carousel slide" data-ride="carousel" >
+                        <div class="carousel-inner">                
+                            <div class="carousel-item container px-5"*ngFor="let item of artist;let index = index;let isFirst = first" [ngClass]="{active:isFirst}">
+                                <div class="row mt-2 mb-4 mx-4">
+                                    <div class="col-xs-12 col-md-3 text-center">
+                                        <img src={{item[4]}} alt="picture" height="150" width="150" class="rounded-circle"><br>
+                                        <label for="name" class="text-success fs-2 fw-bold">{{item[0]}}</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-3 text-center mt-4"> 
+                                        <label for="popularity"  class="text-success">Popularity</label>
+                                        <div style="color:white; position:absolute; width:85%" class="mt-2">{{ item[2] }}</div>
+                                        <mat-progress-spinner
+                                        class="example-margin mx-auto text-center"
+                                        value={{item[2]}}
+                                        diameter=40
+                                        >
+                                        <!-- <div style="color:white; position: absolute;">{{ item[2] }}</div> -->
+                                        </mat-progress-spinner>
+                                    </div>
+                                    <div class="col-xs-12 col-md-3 text-center mt-4">
+                                        <label for="followers"  class="text-success">Followers</label>
+                                        <p>{{item[1].toLocaleString()}}</p>
+                                    </div>
+                                    <div class="col-xs-12 col-md-3 text-center mt-4">
+                                        <label for="Spotify Link"  class="text-success">Spotify Link</label>
+                                        <div>
+                                            <a href={{item[3]}}><img src="https://upload.wikimedia.org/wikipedia/commons/8/84/Spotify_icon.svg" alt="fb" height="30" width="30"></a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-5 mx-4 px-4">
+                                    <label for="album" class="text-success">Album featuring for {{item[0]}}</label>
+                                    <div class="row text-center">
+                                        <div *ngFor="let i of item[5]" class="col-xs-12 col-md-4">
+                                            <img src={{i}} alt="p" style="height:100%; width:100%">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div *ngIf="artist.length > 1">
+                            <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="sr-only">Previous</span>
+                            </a>
+                            <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Next</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <ng-template #noMusic >
+                    <div class="my-5 py-5 container ">
+                        <p class="bg-white rounded-pill text-center text-danger">No music related artist details to show</p>
+                    </div>
+                </ng-template>
+            </mat-tab>
+            <mat-tab label="Venue" >
+                <div class="row text-center">
+                    <div class="col-xs-12 col-md-6">
+                        <div *ngIf="venue.name">
+                            <label for="name" class="text-success">Name</label><br>
+                            {{venue.name}}
+                        </div>
+                        <div *ngIf="venue.state">
+                            <label for="address" class="text-success">Address</label><br>
+                            {{venue.address.line1}}, {{venue.state.name}}, {{venue.state.stateCode}}
+                        </div>
+                        <div *ngIf="venue.boxOfficeInfo">
+                            <label for="phone" class="text-success">Phone Number</label>
+                            <br>
+                            {{venue.boxOfficeInfo.phoneNumberDetail}}
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-md-6">
+                        <div *ngIf="venue.boxOfficeInfo">
+                            <label for="hours" class="text-success">Open Hours</label><br>
+                            <p [ngClass]="{'line-clamp':showmore1}" >{{venue.boxOfficeInfo.openHoursDetail}}</p>
+                            <button class="btn text-white" *ngIf="showmore1" (click)="showMore1()">
+                                <ins class="text-info">Show More</ins>
+                                <span class="material-icons">
+                                    expand_more
+                                </span>
+                            </button>
+                            <button class="btn text-white" *ngIf="showless1" (click)="showLess1()">
+                                <ins class="text-info">Show Less</ins>
+                                <span class="material-icons">
+                                    expand_less
+                                </span>
+                            </button>
+                        </div>
+                        <div *ngIf="venue.generalInfo">
+                            <label for="gRule" class="text-success" *ngIf="venue.generalInfo.generalRule">General Rule</label><br>
+                            <p [ngClass]="{'line-clamp':showmore2}" >{{venue.generalInfo.generalRule}}</p>
+                            <button class="btn text-white" *ngIf="showmore2 && venue.generalInfo.generalRule" (click)="showMore2()">
+                                <ins class="text-info">Show More</ins>
+                                <span class="material-icons">
+                                    expand_more
+                                </span>
+                            </button>
+                            <button class="btn text-white" *ngIf="showless2 &&venue.generalInfo.generalRule" (click)="showLess2()">
+                                <ins class="text-info">Show Less</ins>
+                                <span class="material-icons">
+                                    expand_less
+                                </span>
+                            </button>
+                        </div>
+                        <div *ngIf="venue.generalInfo">
+                            <label for="cRule" class="text-success" *ngIf="venue.generalInfo.childRule">Child Rule</label><br>
+                            <p [ngClass]="{'line-clamp':showmore3}" >{{venue.generalInfo.childRule}}</p>
+                            <button class="btn text-white" *ngIf="showmore3 && venue.generalInfo.childRule" (click)="showMore3()">
+                                <ins class="text-info">Show More</ins>
+                                <span class="material-icons">
+                                    expand_more
+                                </span>
+                            </button>
+                            <button class="btn text-white" *ngIf="showless3 && venue.generalInfo.childRule" (click)="showLess3()">
+                                <ins class="text-info">Show Less</ins>
+                                <span class="material-icons">
+                                    expand_less
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                           
+                <!-- <div class="text-center my-3">
+                    <button type="button" class="btn btn-danger" data-toggle="modal" data-target=".modal">Show venue on Google map</button>              
+                </div> -->
+
+                <!--show google map-->
+                <div class="d-flex justify-content-center mt-3 mb-5">
+                    <button
+                    class="btn btn-danger"
+                    type="button"
+                    data-toggle="modal"
+                    data-target="#myModal"
+                    (click)="showMap()"
+                    >
+                    Show venue on Google map
+                    </button>
+                </div>
+
+            </mat-tab>
+        </mat-tab-group>   
+    </div>
+</div>
+<!-- bs-example-modal-lg -->
+          
+<!-- <div class="modal fade " tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+    <div class="modal-dialog modal-lg p-5" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title mb-0" id="exampleModalLabel">Event Venue</h2>           
+                </div>
+                <div class="modal-body" style="height:400px;width:100%;">
+                    <div class="my-google-map" style="height: 100%; width: 100%;">
+                        <google-map [center]="{ lat: lat, lng: lng }" [zoom]="12" [options]="{ zoomControl: true, streetViewControl: true, fullscreenControl: true }" style=" width: 200px; height:200px;">
+                        <map-marker [position]="{ lat: lng, lng: lng }" [options]="{ draggable: true }" ></map-marker>
+                        </google-map>
+                    </div>
+                   
+                </div>
+                <div class="modal-footer">
+                    <div>
+                        <button type="button" class="btn btn-dark" data-bs-dismiss=".modal" >Close</button>
+                    </div>            
+                </div>
+        </div>
+    </div>
+</div> -->
+
+
+<!--google map-->
+<div
+  class="modal fade"
+  id="myModal"
+  tabindex="0"
+  aria-labelledby="myModalLabel"
+  aria-hidden="true"
+  data-backdrop="false"
+  *ngIf="showmap"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 mb-1" id="myLabel"><b>Event Venue</b></h1>
+      </div>
+      <div class="modal-body">
+        <div class="my-google-map mt-4 mb-4" *ngIf="showmap">
+          <google-map width="100%" height="300px" [options]="mapOptions">
+            <map-marker [position]="marker.position"></map-marker>
+          </google-map>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-dark"
+              data-dismiss="modal"
+              (click)="closeMap()"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

@@ -1,0 +1,49 @@
+@use '@angular/material' as mat; // Custom theming for Angular Material. More info: https://material.angular.io/guide/theming
+@import '@angular/material/theming';
+@include mat-core();
+
+// mat.define-palette takes in 4 arguments: a color palette, a default hue, a "lighter" hue, a  "darker" hue and a "text" hue. I have defined the default hue for the primary palette to be 
+// the default teal palette, which seems to be close enough. See more palettes here: 
+// https://m1.material.io/style/color.html#color-color-palette
+$app-primary: mat.define-palette($mat-teal);
+$app-accent: mat.define-palette($mat-pink, A200, A100, A400);
+$app-warn: mat.define-palette(mat.$red-palette);
+
+// Configure and create the actual theme object to be imported. 
+$app-theme: mat.define-light-theme((
+color: (
+  primary: $app-primary,
+  accent: $app-accent,
+  warn: $app-warn,
+ ),
+ typography: mat.define-typography-config(),
+ density: 0,
+));
+
+// Function that changes the theme text color from black to white
+@function app-light-theme-foreground($color) {
+ @return (
+ base: $color,
+ divider: rgba($color, 0.38),
+ dividers: rgba($color, 0.38),
+ disabled: rgba($color, 0.38),
+ disabled-button:  rgba($color, 0.38),
+ disabled-text: rgba($color, 0.38),
+ hint-text: rgba($color, 0.38),
+ secondary-text: rgba($color, 0.54),
+ icon: rgba($color, 0.54),
+ icons: rgba($color, 0.54),
+ text: rgba($color, 0.87),
+ slider-off: rgba($color, 0.26),
+ slider-off-active: rgba($color, 0.38),
+ slider-min: rgba($color, 0.38)
+);
+};
+
+// Merge the "white-foreground" text theme with the theme you created above
+$white-foreground: app-light-theme-foreground(white);
+$my-app-theme-custom: map-merge($app-theme, (foreground: $white-foreground));
+
+// Finally, import the theme object for use in your project
+@include mat.all-component-themes($app-theme);
+

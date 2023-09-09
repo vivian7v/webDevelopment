@@ -1,0 +1,9 @@
+{
+    "/qwapi/*": {
+    "target": "https://hw8backend-382420.wm.r.appspot.com/",
+    "pathRewrite": {        
+            "^/qwapi": ""
+        },
+    "secure": false
+  }
+}
